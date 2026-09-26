@@ -1580,6 +1580,70 @@
     loadDashboard();
 
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const navItems = document.querySelectorAll(".nav-item");
+
+    navItems.forEach(function(item) {
+
+        item.style.cursor = "pointer";
+
+        item.addEventListener("click", function(event) {
+
+            event.preventDefault();
+
+            const name = item.textContent.trim();
+
+            if (name.includes("Dashboard")) {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+
+            else if (name.includes("Hazard Reports")) {
+                findSection("Recent Reports");
+            }
+
+            else if (name.includes("Emerging Patterns")) {
+                findSection("Emerging Patterns");
+            }
+
+            else if (name.includes("Safety Trends")) {
+                findSection("Hazards by Category");
+            }
+
+            else if (name.includes("Voice Intake")) {
+                window.location.href = "/";
+            }
+
+            else if (name.includes("Settings")) {
+                alert("Settings coming soon.");
+            }
+
+        });
+
+    });
+
+    function findSection(text) {
+
+        const headings = document.querySelectorAll("h1, h2, h3, h4");
+
+        for (const heading of headings) {
+
+            if (heading.textContent.includes(text)) {
+
+                heading.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+                break;
+            }
+
+        }
+
+    }
+
+});
+</script>
 </body>
 </html>
