@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SafeVoice | Safety Intelligence</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --sidebar: #0f172a;
+            --sidebar-light: #1e293b;
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --text: #172033;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+            --success: #16a34a;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --critical: #7f1d1d;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            width: 245px;
+            background: var(--sidebar);
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            padding: 26px 18px;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 8px 28px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            font-size: 22px;
+        }
+
+        .brand h2 {
+            font-size: 19px;
+        }
+
+        .brand p {
+            color: #94a3b8;
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .nav {
+            margin-top: 28px;
+        }
+
+        .nav-label {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 20px 10px 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            margin-bottom: 5px;
+            border-radius: 9px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--sidebar-light);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #1d4ed8;
+            color: white;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 22px;
+            left: 18px;
+            right: 18px;
+            background: var(--sidebar-light);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 12px;
+            color: #cbd5e1;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 7px;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            flex: 1;
+            margin-left: 245px;
+            padding: 28px 32px 40px;
+            min-width: 0;
+        }
+
+        /* HEADER */
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 26px;
+            gap: 20px;
+        }
+
+        .page-title h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .page-title p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .last-updated {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .refresh-btn {
+            border: none;
+            background: var(--primary);
+            color: white;
+            padding: 11px 16px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .refresh-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* HERO */
+
+        .hero {
+            background:
+                linear-gradient(120deg, #172554, #1d4ed8);
+            color: white;
+            padding: 24px 28px;
+            border-radius: 16px;
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hero h2 {
+            font-size: 21px;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            color: #dbeafe;
+            max-width: 700px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .hero-badge {
+            white-space: nowrap;
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+        }
+
+        /* STATUS MESSAGE */
+
+        .status-message {
+            display: none;
+            margin-bottom: 18px;
+            padding: 12px 15px;
+            border-radius: 9px;
+            background: #e0f2fe;
+            color: #075985;
+            font-size: 13px;
+        }
+
+        .status-message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* =========================
+           METRICS
+        ========================= */
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 19px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 17px;
+        }
+
+        .metric-label {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-icon {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            background: var(--primary-light);
+        }
+
+        .metric-value {
+            font-size: 31px;
+            font-weight: 700;
+        }
+
+        .metric-note {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 7px;
+        }
+
+        /* =========================
+           PANELS
+        ========================= */
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 17px;
+            gap: 15px;
+        }
+
+        .panel-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .panel-subtitle {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .panel-badge {
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            background: #f1f5f9;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        /* =========================
+           PATTERNS
+        ========================= */
+
+        .pattern-card {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-left: 4px solid #f97316;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 11px;
+        }
+
+        .pattern-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .pattern-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pattern-title {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .pattern-count {
+            background: #ea580c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+
+        .pattern-location {
+            margin-top: 6px;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .flag-box {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #fed7aa;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #7c2d12;
+        }
+
+        /* =========================
+           CHART
+        ========================= */
+
+        .chart-row {
+            margin-bottom: 14px;
+        }
+
+        .chart-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .chart-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
+
+        .chart-name {
+            font-weight: 600;
+        }
+
+        .bar-track {
+            width: 100%;
+            height: 10px;
+            border-radius: 20px;
+            background: #e2e8f0;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, #2563eb, #60a5fa);
+        }
+
+        /* =========================
+           BREAK CHAIN
+        ========================= */
+
+        .chain {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .chain-step {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            padding: 15px;
+        }
+
+        .chain-number {
+            width: 27px;
+            height: 27px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .chain-step h4 {
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .chain-step p {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .reports {
+            margin-top: 18px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 4px;
+        }
+
+        th {
+            text-align: left;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            font-size: 11px;
+            padding: 12px 11px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 14px 11px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .report-summary {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .report-desc {
+            color: var(--muted);
+            font-size: 11px;
+            max-width: 380px;
+            line-height: 1.4;
+        }
+
+        .severity {
+            display: inline-block;
+            padding: 5px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .severity-low {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .severity-medium {
+            color: #92400e;
+            background: #fef3c7;
+        }
+
+        .severity-high {
+            color: #b91c1c;
+            background: #fee2e2;
+        }
+
+        .severity-critical {
+            background: #7f1d1d;
+            color: white;
+        }
+
+        /* EMPTY */
+
+        .empty {
+            text-align: center;
+            color: #94a3b8;
+            padding: 30px 15px;
+            font-size: 13px;
+        }
+
+        /* FOOTER */
+
+        .footer {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 11px;
+            margin-top: 28px;
+        }
+
+        /* MOBILE */
+
+        @media(max-width: 1000px) {
+            .metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width: 760px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .chain {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width: 520px) {
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">🛡️</div>
+
+            <div>
+                <h2>SafeVoice</h2>
+                <p>Workplace Safety Intelligence</p>
+            </div>
+        </div>
+
+        <nav class="nav">
+
+            <div class="nav-label">Workspace</div>
+
+            <a class="nav-item active">
+                📊 Dashboard
+            </a>
+
+            <a class="nav-item">
+                ⚠️ Hazard Reports
+            </a>
+
+            <a class="nav-item">
+                🔎 Emerging Patterns
+            </a>
+
+            <a class="nav-item">
+                📈 Safety Trends
+            </a>
+
+            <div class="nav-label">System</div>
+
+            <a class="nav-item">
+                🎙️ Voice Intake
+            </a>
+
+            <a class="nav-item">
+                ⚙️ Settings
+            </a>
+
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="status-dot"></span>
+            Monitoring active
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- TOP -->
+        <div class="topbar">
+
+            <div class="page-title">
+                <h1>Safety Intelligence Dashboard</h1>
+                <p>
+                    Detect workplace risks before they become incidents.
+                </p>
+            </div>
+
+            <div class="top-actions">
+
+                <span
+                    class="last-updated"
+                    id="lastUpdated"
+                >
+                    —
+                </span>
+
+                <button
+                    class="refresh-btn"
+                    onclick="loadDashboard()"
+                >
+                    ↻ Refresh
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- HERO -->
+        <div class="hero">
+
+            <div>
+                <h2>
+                    From anonymous voice reports to actionable safety intelligence
+                </h2>
+
+                <p>
+                    SafeVoice identifies repeated hazards, risky locations,
+                    severity trends, and early warning signals so safety teams
+                    can intervene before someone gets hurt.
+                </p>
+            </div>
+
+            <div class="hero-badge">
+                ● Live Monitoring
+            </div>
+
+        </div>
+
+
+        <div
+            id="statusMessage"
+            class="status-message"
+        ></div>
+
+
+        <!-- METRICS -->
+        <div class="metrics">
+
+            <div class="metric-card">
+
+                <div class="metric-header">
+                    <span class="metric-label">
+                        Total Reports
+                    </span>
+
+                    <div class="metric-icon">
+                        📋
+                    </div>
+                </div>
+
+                <div
+                    class="metric-value"
+                    id="totalReports"
+                >
+                    0
+                </div>
+
+                <div class="metric-note">
+                    Anonymous safety reports
+                </div>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-header">
+                    <span class="metric-label">
+                        Near Misses
+                    </span>
+
+                    <div class="metric-icon">
+                        ⚡
+                    </div>
+                </div>
+
+                <div
+                    class="metric-value"
+                    id="nearMisses"
+                >
+                    0
+                </div>
+
+                <div class="metric-note">
+                    Estimated from report language
+                </div>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-header">
+                    <span class="metric-label">
+                        Emerging Patterns
+                    </span>
+
+                    <div class="metric-icon">
+                        🔍
+                    </div>
+                </div>
+
+                <div
+                    class="metric-value"
+                    id="emergingPatterns"
+                >
+                    0
+                </div>
+
+                <div class="metric-note">
+                    Repeated hazards in 14 days
+                </div>
+
+            </div>
+
+
+            <div class="metric-card">
+
+                <div class="metric-header">
+                    <span class="metric-label">
+                        High / Critical
+                    </span>
+
+                    <div class="metric-icon">
+                        🚨
+                    </div>
+                </div>
+
+                <div
+                    class="metric-value"
+                    id="highCritical"
+                >
+                    0
+                </div>
+
+                <div class="metric-note">
+                    Priority reports
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PATTERNS + CHART -->
+        <div class="grid-2">
+
+            <section class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h3 class="panel-title">
+                            Emerging Patterns
+                        </h3>
+
+                        <p class="panel-subtitle">
+                            Repeated category + location combinations
+                            detected within 14 days.
+                        </p>
+                    </div>
+
+                    <span class="panel-badge">
+                        Early warning
+                    </span>
+
+                </div>
+
+                <div id="patternsList">
+
+                    <div class="empty">
+                        No emerging patterns yet.
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h3 class="panel-title">
+                            Hazards by Category
+                        </h3>
+
+                        <p class="panel-subtitle">
+                            Understand which types of safety concerns
+                            are being reported most often.
+                        </p>
+                    </div>
+
+                    <span class="panel-badge">
+                        Live distribution
+                    </span>
+
+                </div>
+
+                <div id="categoryChart">
+
+                    <div class="empty">
+                        No hazard data yet.
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- BREAK CHAIN -->
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <h3 class="panel-title">
+                        Break the Chain
+                    </h3>
+
+                    <p class="panel-subtitle">
+                        Turn repeated weak safety signals into preventive action.
+                    </p>
+                </div>
+
+                <span class="panel-badge">
+                    Prevention workflow
+                </span>
+
+            </div>
+
+            <div class="chain">
+
+                <div class="chain-step">
+
+                    <div class="chain-number">
+                        1
+                    </div>
+
+                    <h4>Anonymous Report</h4>
+
+                    <p>
+                        A worker speaks up about a hazard
+                        or near miss without identifying themselves.
+                    </p>
+
+                </div>
+
+
+                <div class="chain-step">
+
+                    <div class="chain-number">
+                        2
+                    </div>
+
+                    <h4>Pattern Detection</h4>
+
+                    <p>
+                        SafeVoice connects repeated hazard types,
+                        locations and severity signals.
+                    </p>
+
+                </div>
+
+
+                <div class="chain-step">
+
+                    <div class="chain-number">
+                        3
+                    </div>
+
+                    <h4>Preventive Action</h4>
+
+                    <p>
+                        Safety teams investigate and intervene
+                        before a serious incident occurs.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- REPORTS -->
+        <section class="panel reports">
+
+            <div class="panel-header">
+
+                <div>
+                    <h3 class="panel-title">
+                        Recent Reports
+                    </h3>
+
+                    <p class="panel-subtitle">
+                        Latest anonymous workplace safety observations.
+                    </p>
+                </div>
+
+                <span class="panel-badge">
+                    Most recent 10
+                </span>
+
+            </div>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                    <tr>
+                        <th>Report</th>
+                        <th>Category</th>
+                        <th>Location</th>
+                        <th>Severity</th>
+                        <th>Time</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="reportsBody">
+
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty">
+                                No reports yet.
+                            </div>
+                        </td>
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <div class="footer">
+            SafeVoice • Anonymous reporting • Early hazard detection • Preventive safety intelligence
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    function escapeHtml(value) {
+
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+
+    function formatLabel(value) {
+
+        if (!value) {
+            return "Unknown";
+        }
+
+        return String(value)
+            .replaceAll("_", " ")
+            .replace(/\b\w/g, char =>
+                char.toUpperCase()
+            );
+    }
+
+
+    function formatDate(value) {
+
+        if (!value) {
+            return "Unknown";
+        }
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return escapeHtml(value);
+        }
+
+        return date.toLocaleString();
+    }
+
+
+    function severityBadge(severity) {
+
+        const normalized =
+            String(severity || "low")
+                .toLowerCase();
+
+        const allowed = [
+            "low",
+            "medium",
+            "high",
+            "critical"
+        ];
+
+        const safeSeverity =
+            allowed.includes(normalized)
+                ? normalized
+                : "low";
+
+        return `
+            <span class="severity severity-${safeSeverity}">
+                ${escapeHtml(safeSeverity)}
+            </span>
+        `;
+    }
+
+
+    /*
+       TEMPORARY NEAR-MISS LOGIC
+
+       Backend currently has no explicit
+       is_near_miss field.
+
+       This estimates near misses from text.
+    */
+
+    function estimateNearMiss(hazard) {
+
+        const text = `
+            ${hazard.transcript || ""}
+            ${hazard.summary || ""}
+            ${hazard.description || ""}
+        `.toLowerCase();
+
+        const phrases = [
+            "near miss",
+            "near-miss",
+            "almost",
+            "nearly",
+            "close call",
+            "barely",
+            "almost hit",
+            "almost fell",
+            "almost slipped",
+            "nearly hit",
+            "nearly fell"
+        ];
+
+        return phrases.some(
+            phrase => text.includes(phrase)
+        );
+    }
+
+
+    function renderPatterns(patterns) {
+
+        const target =
+            document.getElementById(
+                "patternsList"
+            );
+
+        if (!patterns.length) {
+
+            target.innerHTML = `
+                <div class="empty">
+                    No emerging patterns yet.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        target.innerHTML =
+            patterns.map(pattern => `
+
+                <div class="pattern-card">
+
+                    <div class="pattern-top">
+
+                        <div class="pattern-title">
+                            ${escapeHtml(
+                                formatLabel(
+                                    pattern.hazard_category
+                                )
+                            )}
+                        </div>
+
+                        <span class="pattern-count">
+                            ${Number(pattern.count) || 0}
+                            reports
+                        </span>
+
+                    </div>
+
+                    <div class="pattern-location">
+                        📍
+                        ${escapeHtml(
+                            formatLabel(
+                                pattern.location
+                            )
+                        )}
+                    </div>
+
+                    <div class="flag-box">
+
+                        <strong>
+                            Why was this flagged?
+                        </strong>
+
+                        <br>
+
+                        The same hazard category was
+                        reported multiple times at this
+                        location within the 14-day
+                        monitoring window.
+
+                    </div>
+
+                </div>
+
+            `).join("");
+    }
+
+
+    function renderCategoryChart(hazards) {
+
+        const target =
+            document.getElementById(
+                "categoryChart"
+            );
+
+
+        if (!hazards.length) {
+
+            target.innerHTML = `
+                <div class="empty">
+                    No hazard data yet.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        const counts = {};
+
+
+        hazards.forEach(hazard => {
+
+            const category =
+                hazard.hazard_category ||
+                "other";
+
+            counts[category] =
+                (counts[category] || 0) + 1;
+        });
+
+
+        const sorted =
+            Object.entries(counts)
+                .sort(
+                    (a, b) =>
+                        b[1] - a[1]
+                );
+
+
+        const max =
+            sorted[0][1];
+
+
+        target.innerHTML =
+            sorted.map(
+                ([category, count]) => {
+
+                    const width =
+                        (count / max) * 100;
+
+                    return `
+
+                        <div class="chart-row">
+
+                            <div class="chart-info">
+
+                                <span class="chart-name">
+                                    ${escapeHtml(
+                                        formatLabel(category)
+                                    )}
+                                </span>
+
+                                <strong>
+                                    ${count}
+                                </strong>
+
+                            </div>
+
+                            <div class="bar-track">
+
+                                <div
+                                    class="bar-fill"
+                                    style="width:${width}%"
+                                ></div>
+
+                            </div>
+
+                        </div>
+
+                    `;
+                }
+            ).join("");
+    }
+
+
+    function renderReports(hazards) {
+
+        const target =
+            document.getElementById(
+                "reportsBody"
+            );
+
+
+        if (!hazards.length) {
+
+            target.innerHTML = `
+
+                <tr>
+
+                    <td colspan="5">
+
+                        <div class="empty">
+                            No reports yet.
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+        }
+
+
+        target.innerHTML =
+            hazards
+                .slice(0, 10)
+                .map(hazard => `
+
+                    <tr>
+
+                        <td>
+
+                            <div class="report-summary">
+                                ${escapeHtml(
+                                    hazard.summary ||
+                                    "No summary"
+                                )}
+                            </div>
+
+                            <div class="report-desc">
+                                ${escapeHtml(
+                                    hazard.description ||
+                                    ""
+                                )}
+                            </div>
+
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                formatLabel(
+                                    hazard.hazard_category
+                                )
+                            )}
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                formatLabel(
+                                    hazard.location
+                                )
+                            )}
+                        </td>
+
+
+                        <td>
+                            ${severityBadge(
+                                hazard.severity
+                            )}
+                        </td>
+
+
+                        <td>
+                            ${formatDate(
+                                hazard.created_at
+                            )}
+                        </td>
+
+                    </tr>
+
+                `).join("");
+    }
+
+
+    async function loadDashboard() {
+
+        const status =
+            document.getElementById(
+                "statusMessage"
+            );
+
+
+        try {
+
+            status.style.display =
+                "block";
+
+            status.className =
+                "status-message";
+
+            status.textContent =
+                "Loading live safety data...";
+
+
+            const response =
+                await fetch(
+                    "/api/hazards"
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load hazard data."
+                );
+            }
+
+
+            const data =
+                await response.json();
+
+
+            const hazards =
+                Array.isArray(data.hazards)
+                    ? data.hazards
+                    : [];
+
+
+            const patterns =
+                Array.isArray(data.patterns)
+                    ? data.patterns
+                    : [];
+
+
+            /*
+                METRICS
+            */
+
+            document.getElementById(
+                "totalReports"
+            ).textContent =
+                hazards.length;
+
+
+            const nearMisses =
+                hazards.filter(
+                    estimateNearMiss
+                ).length;
+
+
+            document.getElementById(
+                "nearMisses"
+            ).textContent =
+                nearMisses;
+
+
+            document.getElementById(
+                "emergingPatterns"
+            ).textContent =
+                patterns.length;
+
+
+            const highCritical =
+                hazards.filter(
+                    hazard => {
+
+                        const severity =
+                            String(
+                                hazard.severity || ""
+                            ).toLowerCase();
+
+                        return (
+                            severity === "high" ||
+                            severity === "critical"
+                        );
+                    }
+                ).length;
+
+
+            document.getElementById(
+                "highCritical"
+            ).textContent =
+                highCritical;
+
+
+            /*
+                SECTIONS
+            */
+
+            renderPatterns(
+                patterns
+            );
+
+            renderCategoryChart(
+                hazards
+            );
+
+            renderReports(
+                hazards
+            );
+
+
+            document.getElementById(
+                "lastUpdated"
+            ).textContent =
+                "Updated " +
+                new Date().toLocaleTimeString(
+                    [],
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }
+                );
+
+
+            status.style.display =
+                "none";
+
+        }
+
+        catch (error) {
+
+            console.error(
+                error
+            );
+
+            status.style.display =
+                "block";
+
+            status.className =
+                "status-message error";
+
+            status.textContent =
+                "Unable to load safety data. Check that the Flask server is running.";
+
+        }
+    }
+
+
+    loadDashboard();
+
+</script>
+
+</body>
+</html>
