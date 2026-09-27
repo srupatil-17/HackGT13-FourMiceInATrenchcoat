@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SafeVoice | Anonymous Hazard Report</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --navy: #0f172a;
+            --blue: #2563eb;
+            --blue-dark: #1d4ed8;
+            --text: #172033;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .topbar {
+            background: var(--navy);
+            color: white;
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--blue);
+            font-size: 22px;
+        }
+
+        .brand h2 {
+            font-size: 19px;
+        }
+
+        .brand p {
+            color: #94a3b8;
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .dashboard-link {
+            color: white;
+            text-decoration: none;
+            background: #1e293b;
+            padding: 10px 15px;
+            border-radius: 9px;
+            font-size: 13px;
+        }
+
+        .dashboard-link:hover {
+            background: #334155;
+        }
+
+        .page {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 42px 22px 60px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 30px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .hero h1 {
+            font-size: 34px;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: var(--muted);
+            max-width: 670px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .privacy-strip {
+            background: #ecfdf5;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 13px 16px;
+            margin-bottom: 22px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+        }
+
+        .card-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .card-title h2 {
+            font-size: 21px;
+            margin-bottom: 7px;
+        }
+
+        .card-title p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .mic-area {
+            text-align: center;
+            padding: 10px 0 26px;
+        }
+
+        .mic-button {
+            width: 115px;
+            height: 115px;
+            border-radius: 50%;
+            border: none;
+            background: var(--blue);
+            color: white;
+            font-size: 43px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 8px 22px rgba(37, 99, 235, 0.25);
+        }
+
+        .mic-button:hover {
+            transform: scale(1.04);
+            background: var(--blue-dark);
+        }
+
+        .mic-button.listening {
+            background: var(--danger);
+            animation: pulse 1.3s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(220, 38, 38, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+            }
+        }
+
+        .mic-status {
+            margin-top: 15px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .mic-help {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 145px;
+            resize: vertical;
+            border: 1px solid #cbd5e1;
+            border-radius: 11px;
+            padding: 14px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px #dbeafe;
+        }
+
+        .example {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 7px;
+            line-height: 1.5;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 17px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            background: var(--blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--blue-dark);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .message {
+            display: none;
+            margin-top: 20px;
+            border-radius: 11px;
+            padding: 14px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .result {
+            display: none;
+            margin-top: 24px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 19px;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result h3 {
+            margin-bottom: 15px;
+            font-size: 17px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 13px;
+        }
+
+        .result-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 13px;
+        }
+
+        .result-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .result-value {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .pattern-warning {
+            display: none;
+            margin-top: 15px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            padding: 13px;
+            border-radius: 9px;
+            font-size: 13px;
+        }
+
+        .pattern-warning.show {
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 11px;
+            margin-top: 25px;
+        }
+
+        @media(max-width: 650px) {
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .hero h1 {
+                font-size: 27px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="topbar">
+
+        <div class="brand">
+            <div class="brand-icon">🛡️</div>
+
+            <div>
+                <h2>SafeVoice</h2>
+                <p>Anonymous Workplace Safety Reporting</p>
+            </div>
+        </div>
+
+        <a class="dashboard-link" href="/dashboard">
+            📊 Safety Dashboard
+        </a>
+
+    </header>
+
+
+    <main class="page">
+
+        <section class="hero">
+
+            <div class="hero-badge">
+                Anonymous • Fast • Preventive
+            </div>
+
+            <h1>
+                Speak up before someone gets hurt.
+            </h1>
+
+            <p>
+                Report a workplace hazard or near miss using your voice.
+                SafeVoice converts your report into structured safety
+                intelligence and looks for repeated warning signals.
+            </p>
+
+        </section>
+
+
+        <div class="privacy-strip">
+            🔒 Do not include your name or another worker's name.
+            Reports are intended to remain anonymous.
+        </div>
+
+
+        <section class="card">
+
+            <div class="card-title">
+                <h2>🎙️ Anonymous Voice Intake</h2>
+
+                <p>
+                    Tap the microphone and describe what you noticed.
+                    You can also type or edit the report before submitting.
+                </p>
+            </div>
+
+
+            <div class="mic-area">
+
+                <button
+                    id="micButton"
+                    class="mic-button"
+                    type="button"
+                    aria-label="Start voice recording"
+                >
+                    🎙️
+                </button>
+
+                <div
+                    class="mic-status"
+                    id="micStatus"
+                >
+                    Tap microphone to start
+                </div>
+
+                <div class="mic-help">
+                    Chrome is recommended for voice recognition.
+                </div>
+
+            </div>
+
+
+            <label for="transcript">
+                What hazard or near miss did you notice?
+            </label>
+
+            <textarea
+                id="transcript"
+                placeholder="Example: I almost slipped on water near the loading dock. The floor is still wet."
+            ></textarea>
+
+            <div class="example">
+                Include what happened and where it happened.
+                Avoid names or identifying information.
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    class="btn btn-secondary"
+                    id="clearButton"
+                    type="button"
+                >
+                    Clear
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    id="submitButton"
+                    type="button"
+                >
+                    Submit Anonymous Report
+                </button>
+
+            </div>
+
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+
+            <div
+                id="result"
+                class="result"
+            >
+
+                <h3>✅ Report received</h3>
+
+                <div class="result-grid">
+
+                    <div class="result-item">
+                        <div class="result-label">Summary</div>
+                        <div
+                            class="result-value"
+                            id="resultSummary"
+                        ></div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-label">Hazard Category</div>
+                        <div
+                            class="result-value"
+                            id="resultCategory"
+                        ></div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-label">Location</div>
+                        <div
+                            class="result-value"
+                            id="resultLocation"
+                        ></div>
+                    </div>
+
+                    <div class="result-item">
+                        <div class="result-label">Severity</div>
+                        <div
+                            class="result-value"
+                            id="resultSeverity"
+                        ></div>
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="pattern-warning"
+                    id="patternWarning"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <div class="footer">
+            SafeVoice • Anonymous reporting • Early hazard detection
+        </div>
+
+    </main>
+
+
+    <script>
+
+        const micButton =
+            document.getElementById("micButton");
+
+        const micStatus =
+            document.getElementById("micStatus");
+
+        const transcript =
+            document.getElementById("transcript");
+
+        const submitButton =
+            document.getElementById("submitButton");
+
+        const clearButton =
+            document.getElementById("clearButton");
+
+        const message =
+            document.getElementById("message");
+
+        const result =
+            document.getElementById("result");
+
+        const patternWarning =
+            document.getElementById("patternWarning");
+
+
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+
+        let recognition = null;
+        let listening = false;
+
+
+        function formatLabel(value) {
+
+            if (!value) {
+                return "Unknown";
+            }
+
+            return String(value)
+                .replaceAll("_", " ")
+                .replace(/\b\w/g, char =>
+                    char.toUpperCase()
+                );
+        }
+
+
+        function showMessage(text, type) {
+
+            message.textContent = text;
+            message.className =
+                "message " + type;
+        }
+
+
+        function clearMessage() {
+
+            message.style.display = "none";
+            message.textContent = "";
+            message.className = "message";
+        }
+
+
+        if (SpeechRecognition) {
+
+            recognition =
+                new SpeechRecognition();
+
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = "en-US";
+
+
+            recognition.onstart = function () {
+
+                listening = true;
+
+                micButton.classList.add(
+                    "listening"
+                );
+
+                micStatus.textContent =
+                    "Listening... speak naturally";
+            };
+
+
+            recognition.onresult = function (event) {
+
+                let finalText = "";
+                let interimText = "";
+
+                for (
+                    let i = event.resultIndex;
+                    i < event.results.length;
+                    i++
+                ) {
+
+                    const spoken =
+                        event.results[i][0].transcript;
+
+                    if (event.results[i].isFinal) {
+                        finalText += spoken;
+                    } else {
+                        interimText += spoken;
+                    }
+
+                }
+
+                if (finalText) {
+
+                    const current =
+                        transcript.value.trim();
+
+                    transcript.value =
+                        current
+                            ? current + " " + finalText
+                            : finalText;
+
+                }
+
+                if (interimText) {
+
+                    micStatus.textContent =
+                        "Listening: " + interimText;
+                }
+
+            };
+
+
+            recognition.onerror = function (event) {
+
+                listening = false;
+
+                micButton.classList.remove(
+                    "listening"
+                );
+
+                micStatus.textContent =
+                    "Microphone stopped";
+
+                showMessage(
+                    "Voice recognition error: " +
+                    event.error +
+                    ". You can still type your report.",
+                    "error"
+                );
+
+            };
+
+
+            recognition.onend = function () {
+
+                listening = false;
+
+                micButton.classList.remove(
+                    "listening"
+                );
+
+                micStatus.textContent =
+                    "Tap microphone to speak again";
+
+            };
+
+
+            micButton.addEventListener(
+                "click",
+                function () {
+
+                    clearMessage();
+
+                    if (listening) {
+
+                        recognition.stop();
+
+                    } else {
+
+                        try {
+                            recognition.start();
+                        }
+
+                        catch (error) {
+                            console.error(error);
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+        else {
+
+            micButton.disabled = true;
+
+            micStatus.textContent =
+                "Voice recognition is not supported in this browser.";
+
+            showMessage(
+                "Use Google Chrome for microphone voice input. You can still type your report below.",
+                "error"
+            );
+
+        }
+
+
+        clearButton.addEventListener(
+            "click",
+            function () {
+
+                transcript.value = "";
+
+                clearMessage();
+
+                result.classList.remove(
+                    "show"
+                );
+
+                patternWarning.classList.remove(
+                    "show"
+                );
+
+            }
+        );
+
+
+        submitButton.addEventListener(
+            "click",
+            async function () {
+
+                const text =
+                    transcript.value.trim();
+
+
+                if (!text) {
+
+                    showMessage(
+                        "Please describe a hazard or near miss before submitting.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                clearMessage();
+
+                result.classList.remove(
+                    "show"
+                );
+
+                patternWarning.classList.remove(
+                    "show"
+                );
+
+
+                submitButton.disabled = true;
+
+                submitButton.textContent =
+                    "Analyzing report...";
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/process",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body: JSON.stringify({
+                                    transcript: text
+                                })
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data.error ||
+                            "Unable to process report."
+                        );
+                    }
+
+
+                    document.getElementById(
+                        "resultSummary"
+                    ).textContent =
+                        data.summary ||
+                        "Not available";
+
+
+                    document.getElementById(
+                        "resultCategory"
+                    ).textContent =
+                        formatLabel(
+                            data.hazard_category
+                        );
+
+
+                    document.getElementById(
+                        "resultLocation"
+                    ).textContent =
+                        formatLabel(
+                            data.location
+                        );
+
+
+                    document.getElementById(
+                        "resultSeverity"
+                    ).textContent =
+                        formatLabel(
+                            data.severity
+                        );
+
+
+                    result.classList.add(
+                        "show"
+                    );
+
+
+                    if (
+                        data.is_emerging_pattern
+                    ) {
+
+                        patternWarning.textContent =
+                            "⚠️ Emerging pattern detected: " +
+                            data.pattern_count +
+                            " similar reports have been recorded recently.";
+
+                        patternWarning.classList.add(
+                            "show"
+                        );
+
+                    }
+
+
+                    showMessage(
+                        "Your anonymous safety report was submitted successfully.",
+                        "success"
+                    );
+
+
+                    transcript.value = "";
+
+                }
+
+                catch (error) {
+
+                    console.error(error);
+
+                    showMessage(
+                        error.message ||
+                        "Unable to submit report. Please try again.",
+                        "error"
+                    );
+
+                }
+
+                finally {
+
+                    submitButton.disabled = false;
+
+                    submitButton.textContent =
+                        "Submit Anonymous Report";
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
